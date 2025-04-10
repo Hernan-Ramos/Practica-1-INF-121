@@ -1,0 +1,15 @@
+@startuml
+class Perro {
+    +String hacerSonido(sonido: String): String
+    + void moverse(): void
+}
+class Pajaro {
+    +String hacerSonido(sonido: String): String
+    +void moverse(): void
+
+}
+class Gato {
+    +String hacerSonido(sonido: String): String
+    + void moverse(): void
+}
+@enduml
