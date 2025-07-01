@@ -1,0 +1,144 @@
+class Mascota {
+    String nombre;
+    String raza;
+    int edad;
+    String sexo;
+
+    Mascota(String nombre, String raza, int edad, String sexo) {
+        this.nombre = nombre;
+        this.raza = raza;
+        this.edad = edad;
+        this.sexo = sexo;
+    }
+
+    void mostrar() {
+        System.out.println("Mascota: " + nombre + ", Raza: " + raza + ", Edad: " + edad + ", Sexo: " + sexo);
+    }
+}
+
+class Propietario {
+    String nombre;
+    int edad;
+    String telefono;
+    Mascota[] pilaMascotas;
+    int tope;
+
+    Propietario(String nombre, int edad, String telefono, int tamPila) {
+        this.nombre = nombre;
+        this.edad = edad;
+        this.telefono = telefono;
+        this.pilaMascotas = new Mascota[tamPila];
+        this.tope = -1;
+    }
+
+    void apilarMascota(Mascota m) {
+        if (tope < pilaMascotas.length - 1) {
+            tope++;
+            pilaMascotas[tope] = m;
+        }
+    }
+
+    Mascota desapilarMascota() {
+        if (tope >= 0) {
+            Mascota m = pilaMascotas[tope];
+            tope--;
+            return m;
+        }
+        return null;
+    }
+
+    boolean tieneMascotas() {
+        return tope >= 0;
+    }
+}
+
+// Clase que simula una cola de propietarios
+class ColaPropietarios {
+    Propietario[] datos;
+    int frente;
+    int fin;
+    int max;
+
+    ColaPropietarios(int tam) {
+        max = tam;
+        datos = new Propietario[max];
+        frente = 0;
+        fin = -1;
+    }
+
+    boolean estaVacia() {
+        return frente > fin;
+    }
+
+    boolean estaLlena() {
+        return fin == max - 1;
+    }
+
+    void insertar(Propietario p) {
+        if (!estaLlena()) {
+            fin++;
+            datos[fin] = p;
+        }
+    }
+
+    Propietario eliminar() {
+        if (!estaVacia()) {
+            Propietario p = datos[frente];
+            frente++;
+            return p;
+        }
+        return null;
+    }
+
+    void vaciar(ColaPropietarios otra) {
+        while (!otra.estaVacia()) {
+            this.insertar(otra.eliminar());
+        }
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        ColaPropietarios cola = new ColaPropietarios(5);
+
+        Propietario p1 = new Propietario("Juan", 40, "123456", 5);
+        p1.apilarMascota(new Mascota("Firulais", "Labrador", 5, "macho"));
+        p1.apilarMascota(new Mascota("Luna", "Poodle", 3, "hembra"));
+
+        Propietario p2 = new Propietario("Ana", 35, "789101", 5);
+        p2.apilarMascota(new Mascota("Rex", "Pastor", 4, "macho"));
+        p2.apilarMascota(new Mascota("Mia", "Chihuahua", 2, "hembra"));
+
+        cola.insertar(p1);
+        cola.insertar(p2);
+
+        String sexoBuscado = "hembra";
+        System.out.println("Mascotas de sexo: " + sexoBuscado);
+
+        ColaPropietarios aux = new ColaPropietarios(5);
+
+        while (!cola.estaVacia()) {
+            Propietario prop = cola.eliminar();
+
+            Mascota[] temporal = new Mascota[prop.tope + 1];
+            int i = 0;
+
+            while (prop.tieneMascotas()) {
+                Mascota m = prop.desapilarMascota();
+                if (m.sexo.equals(sexoBuscado)) {
+                    m.mostrar();
+                }
+                temporal[i] = m;
+                i++;
+            }
+
+            for (int j = i - 1; j >= 0; j--) {
+                prop.apilarMascota(temporal[j]);
+            }
+
+            aux.insertar(prop);
+        }
+
+        cola.vaciar(aux);
+    }
+}
